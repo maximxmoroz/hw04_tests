@@ -26,7 +26,7 @@ class PostPagesTests(TestCase):
             group=cls.group,
         )
         cls.other_group = Group.objects.create(
-           title='Тестовый заголовок',
+            title='Тестовый заголовок',
             description='Тестовое описание',
             slug='test-other_slug'
         )
