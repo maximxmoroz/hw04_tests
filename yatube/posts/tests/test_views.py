@@ -1,3 +1,4 @@
+from django.conf import settings
 from django import forms
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
@@ -8,8 +9,7 @@ from ..models import Group, Post
 User = get_user_model()
 
 
-class PostPagesTests(TestCase):
-    maxDiff = None
+class PostPagesTests(TestCase): 
 
     @classmethod
     def setUpClass(cls):
@@ -118,3 +118,72 @@ class PostPagesTests(TestCase):
             with self.subTest(value=value):
                 form_field = response.context.get('form').fields.get(value)
                 self.assertIsInstance(form_field, expected)
+
+    def test_post_new_create(self):
+        """При создании поста он должен появляется на главной странице,
+        на странице выбранной группы и в
+        в профайле пользователя"""
+        new_post = Post.objects.create(
+            author=self.user,
+            text=self.post.text,
+            group=self.group
+        )
+        exp_pages = [
+            reverse('posts:index'),
+            reverse(
+                'posts:group_posts', kwargs={'slug': self.group.slug}),
+            reverse(
+                'posts:profile', kwargs={'username': self.user.username})
+        ]
+        for rev in exp_pages:
+            with self.subTest(rev=rev):
+                response = self.authorized_client.get(rev)
+                self.assertIn(
+                    new_post, response.context['page_obj']
+                )
+
+    def test_post_new_not_in_group(self):
+        """Проверяем, что созданный пост не находится в другой группе,
+        где он не должен находиться."""
+        new_post = Post.objects.create(
+            author=self.user,
+            text=self.post.text,
+            group=self.group
+        )
+        response = self.authorized_client.get(
+            reverse(
+                'posts:group_posts',
+                kwargs={'slug': self.other_group.slug})
+        )
+        self.assertNotIn(new_post, response.context['page_obj'])
+
+class PaginatorViewsTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user = User.objects.create(
+            username='posts_author',
+        )
+        cls.group = Group.objects.create(
+            title='test_group_title',
+            slug='test_group_slug',
+            description='Тестовое описание группы',
+        )
+        cls.post = [
+            Post.objects.create(
+                text='Пост №' + str(i),
+                author=PaginatorViewsTest.user,
+                group=PaginatorViewsTest.group
+            )
+            for i in range(13)]
+
+    def test_index_page_contains_ten_records(self):
+
+        response = self.client.get(reverse('posts:index'))
+        self.assertEqual(len(response.context['page_obj']), 10)
+
+    def test_second_page_contains_three_records(self):
+        response = self.client.get(
+            reverse('posts:index') + '?page=2'
+        )
+        self.assertEqual(len(response.context['page_obj']), 3)

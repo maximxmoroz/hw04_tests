@@ -127,3 +127,4 @@ LOGIN_URL = 'users:login'
 LOGIN_REDIRECT_URL = 'posts:index'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
+PAGINATOR_POST_COUNT = 10
