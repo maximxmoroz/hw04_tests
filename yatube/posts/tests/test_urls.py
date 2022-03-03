@@ -54,7 +54,7 @@ class PostURLTests(TestCase):
         """Проверка работы страниц"""
         for adress in self.templates_url_names:
             with self.subTest(adress=adress):
-                response = PostURLTests.authorized_author.get( 
+                response = PostURLTests.authorized_author.get(
                     adress, follow=True
                 )
                 self.assertEqual(response.status_code, HTTPStatus.OK.value)

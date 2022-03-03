@@ -8,7 +8,7 @@ from ..models import Group, Post
 User = get_user_model()
 
 
-class PostPagesTests(TestCase): 
+class PostPagesTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -154,6 +154,7 @@ class PostPagesTests(TestCase):
                 kwargs={'slug': self.other_group.slug})
         )
         self.assertNotIn(new_post, response.context['page_obj'])
+
 
 class PaginatorViewsTest(TestCase):
     @classmethod
