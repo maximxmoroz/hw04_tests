@@ -1,4 +1,3 @@
-from django.conf import settings
 from django import forms
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
@@ -10,7 +9,6 @@ User = get_user_model()
 
 
 class PostPagesTests(TestCase): 
-
     @classmethod
     def setUpClass(cls):
         super().setUpClass()

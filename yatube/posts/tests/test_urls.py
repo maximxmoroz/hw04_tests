@@ -52,11 +52,11 @@ class PostURLTests(TestCase):
 
     def test_urls(self):
         """Проверка работы страниц"""
-        for adress in self.templates_url_names: 
-            with self.subTest(adress=adress): 
+        for adress in self.templates_url_names:
+            with self.subTest(adress=adress):
                 response = PostURLTests.authorized_author.get( 
-                    adress, follow=True 
-                ) 
+                    adress, follow=True
+                )
                 self.assertEqual(response.status_code, HTTPStatus.OK.value)
 
     def test_redirect_if_not_logged_in(self):
@@ -67,6 +67,6 @@ class PostURLTests(TestCase):
         self.assertTrue(response, '/accounts/login/')
 
     def test_authorized_client(self):
-        """Проверка авторизованного пользователя""" 
+        """Проверка авторизованного пользователя"""
         response = self.authorized_client.get('/create/')
         self.assertTemplateUsed(response, 'posts/create_post.html')
