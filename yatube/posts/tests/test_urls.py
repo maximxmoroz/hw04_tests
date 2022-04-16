@@ -2,6 +2,7 @@ from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from posts.models import Post, Group
 from http import HTTPStatus
+from django.core.cache import cache
 
 User = get_user_model()
 
@@ -38,15 +39,16 @@ class PostURLTests(TestCase):
             f'/profile/{cls.user.username}/': 'posts/profile.html',
             f'/posts/{cls.post.id}/': 'posts/post_detail.html',
             '/create/': 'posts/create_post.html',
-            f'/posts/{cls.post.id}/edit/': 'posts/create_post.html',
+            f'/posts/{cls.post.id}/edit/': 'posts/create_post.html', 
         }
 
     def test_urls_uses_correct_template(self):
         """URL-адрес использует соответствующий шаблон."""
+        cache.clear()
         for adress, template in PostURLTests.templates_url_names.items():
             with self.subTest(adress=adress):
                 response = PostURLTests.authorized_author.get(
-                    adress, follow=True
+                    adress
                 )
                 self.assertTemplateUsed(response, template)
 
